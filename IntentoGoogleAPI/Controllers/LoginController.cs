@@ -24,22 +24,8 @@ namespace IntentoGoogleAPI.Controllers
             this.loginService = loginService;
             this.config = config;
         }
-        // GET: api/<LoginController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<LoginController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // POST api/<LoginController>
-        [HttpPost("authenticate")]
+        [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginCred loginCred)
         {
             var cuenta = await loginService.GetUsuario(new LoginCred { Username = loginCred.Username, Password = loginCred.Password});
@@ -58,19 +44,6 @@ namespace IntentoGoogleAPI.Controllers
                 JWTToken = jwtToken,
             });
         }
-
-        // PUT api/<LoginController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<LoginController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
         [NonAction]
         public string GenerateToken(Usuario usuario)
         {

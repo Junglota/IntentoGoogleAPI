@@ -29,8 +29,6 @@ public partial class ContabilidadContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-    public virtual DbSet<Venta> Ventas { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=35.238.168.138;Database=Contabilidad;Uid=sqlserver;Password=contabilidadsinrebu;TrustServerCertificate=True;");
@@ -50,13 +48,13 @@ public partial class ContabilidadContext : DbContext
 
         modelBuilder.Entity<Inventario>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Inventario");
+            entity.HasKey(e => e.IntId);
+
+            entity.ToTable("Inventario");
 
             entity.Property(e => e.IdProducto).HasMaxLength(50);
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany()
+            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.Inventarios)
                 .HasForeignKey(d => d.IdProducto)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Inventario_Productos");
@@ -82,6 +80,10 @@ public partial class ContabilidadContext : DbContext
                 .HasForeignKey(d => d.IdProducto)
                 .HasConstraintName("FK_Movimientos_Productos");
 
+            entity.HasOne(d => d.IdTiendaNavigation).WithMany(p => p.Movimientos)
+                .HasForeignKey(d => d.IdTienda)
+                .HasConstraintName("FK_Movimientos_Tienda");
+
             entity.HasOne(d => d.UsuarioNavigation).WithMany(p => p.Movimientos)
                 .HasForeignKey(d => d.Usuario)
                 .HasConstraintName("FK_Movimientos_Usuarios");
@@ -96,6 +98,10 @@ public partial class ContabilidadContext : DbContext
                 .HasColumnName("COD");
             entity.Property(e => e.Nombre).HasMaxLength(255);
             entity.Property(e => e.Precio).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.IdTiendaNavigation).WithMany(p => p.Productos)
+                .HasForeignKey(d => d.IdTienda)
+                .HasConstraintName("FK_Productos_Tienda");
         });
 
         modelBuilder.Entity<Tiendum>(entity =>
@@ -131,34 +137,6 @@ public partial class ContabilidadContext : DbContext
             entity.HasOne(d => d.UserTypeNavigation).WithMany(p => p.Usuarios)
                 .HasForeignKey(d => d.UserType)
                 .HasConstraintName("FK_Usuarios_Tipo");
-        });
-
-        modelBuilder.Entity<Venta>(entity =>
-        {
-            entity.HasKey(e => e.IntId).HasName("PK_Inventario");
-
-            entity.Property(e => e.CantidadAgregadores).HasColumnName("cantidadAgregadores");
-            entity.Property(e => e.CantidadCarryOut).HasColumnName("cantidadCarryOut");
-            entity.Property(e => e.CantidadDelivery).HasColumnName("cantidadDelivery");
-            entity.Property(e => e.CodProducto)
-                .HasMaxLength(50)
-                .HasColumnName("codProducto");
-            entity.Property(e => e.Familia).HasMaxLength(50);
-            entity.Property(e => e.FechaRegistro)
-                .HasColumnType("date")
-                .HasColumnName("fechaRegistro");
-            entity.Property(e => e.FechaVenta)
-                .HasColumnType("date")
-                .HasColumnName("fechaVenta");
-            entity.Property(e => e.Grupo).HasMaxLength(50);
-
-            entity.HasOne(d => d.CodProductoNavigation).WithMany(p => p.Venta)
-                .HasForeignKey(d => d.CodProducto)
-                .HasConstraintName("FK_Ventas_Productos");
-
-            entity.HasOne(d => d.IdHeladeriaNavigation).WithMany(p => p.Venta)
-                .HasForeignKey(d => d.IdHeladeria)
-                .HasConstraintName("FK_Inventario_Heladerias");
         });
 
         OnModelCreatingPartial(modelBuilder);

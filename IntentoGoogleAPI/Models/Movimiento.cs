@@ -25,5 +25,7 @@ public partial class Movimiento
 
     public virtual Producto? IdProductoNavigation { get; set; }
 
+    public virtual Tiendum? IdTiendaNavigation { get; set; }
+
     public virtual Usuario? UsuarioNavigation { get; set; }
 }

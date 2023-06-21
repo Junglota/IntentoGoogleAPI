@@ -15,7 +15,9 @@ public partial class Producto
 
     public int? IdTienda { get; set; }
 
-    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
+    public virtual Tiendum? IdTiendaNavigation { get; set; }
 
-    public virtual ICollection<Venta> Venta { get; set; } = new List<Venta>();
+    public virtual ICollection<Inventario> Inventarios { get; set; } = new List<Inventario>();
+
+    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
 }
