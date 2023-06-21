@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IntentoGoogleAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
+using Newtonsoft.Json.Linq;
 
 namespace IntentoGoogleAPI.Controllers
 {
@@ -22,8 +24,9 @@ namespace IntentoGoogleAPI.Controllers
             _context = context;
         }
 
-        [Authorize(policy:"Admin")]
+
         // GET: api/Productos
+        [Authorize(policy: "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductosAdmin()
         {
@@ -34,9 +37,10 @@ namespace IntentoGoogleAPI.Controllers
             return await _context.Productos.ToListAsync();
         }
 
-        [Route("/propietario/{idTienda}")]
-        [Authorize(policy:"Propietario")]
+
         // GET: api/Productos
+        [Route("/tienda/{idTienda}")]
+        [Authorize(policy: "Admin,Propietario,Empleado")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductosPropietario(int idTienda)
         {
@@ -46,8 +50,9 @@ namespace IntentoGoogleAPI.Controllers
           }
             return await _context.Productos.Where(p => p.IdTienda == idTienda).ToListAsync();
         }
-
+        
         // GET: api/Productos/5
+        [Authorize(policy: "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(string id)
         {
@@ -98,6 +103,7 @@ namespace IntentoGoogleAPI.Controllers
 
         // POST: api/Productos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(policy: "Admin,Propietario")]
         [HttpPost]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
@@ -126,6 +132,7 @@ namespace IntentoGoogleAPI.Controllers
         }
 
         // DELETE: api/Productos/5
+        [Authorize(policy: "Admin,Propietario")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(string id)
         {
@@ -143,6 +150,21 @@ namespace IntentoGoogleAPI.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        [Authorize(policy: "Admin,Propietario")]
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(string id, [FromBody] JsonPatchDocument<Producto> personPatch) // Ejemplo de body: [{"op" : "replace", "path" : "/Cantidad", "value" : "10"}]
+        {
+            var result = _context.Productos.FirstOrDefault(n => n.Cod == id);
+            if (result == null)
+            {
+                return BadRequest();
+
+            }
+            personPatch.ApplyTo(result);
+            _context.Entry(result).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return Ok(result);
         }
 
         private bool ProductoExists(string id)
