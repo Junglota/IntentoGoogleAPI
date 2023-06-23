@@ -75,7 +75,7 @@ namespace IntentoGoogleAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducto(string id, Producto producto)
         {
-            if (id != producto.Cod)
+            if (id != producto.IdProducto)
             {
                 return BadRequest();
             }
@@ -118,7 +118,7 @@ namespace IntentoGoogleAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ProductoExists(producto.Cod))
+                if (ProductoExists(producto.IdProducto))
                 {
                     return Conflict();
                 }
@@ -128,7 +128,7 @@ namespace IntentoGoogleAPI.Controllers
                 }
             }
 
-            return CreatedAtAction("GetProducto", new { id = producto.Cod }, producto);
+            return CreatedAtAction("GetProducto", new { id = producto.IdProducto }, producto);
         }
 
         // DELETE: api/Productos/5
@@ -155,7 +155,7 @@ namespace IntentoGoogleAPI.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(string id, [FromBody] JsonPatchDocument<Producto> personPatch) // Ejemplo de body: [{"op" : "replace", "path" : "/Cantidad", "value" : "10"}]
         {
-            var result = _context.Productos.FirstOrDefault(n => n.Cod == id);
+            var result = _context.Productos.FirstOrDefault(n => n.IdProducto == id);
             if (result == null)
             {
                 return BadRequest();
@@ -169,7 +169,7 @@ namespace IntentoGoogleAPI.Controllers
 
         private bool ProductoExists(string id)
         {
-            return (_context.Productos?.Any(e => e.Cod == id)).GetValueOrDefault();
+            return (_context.Productos?.Any(e => e.IdProducto == id)).GetValueOrDefault();
         }
     }
 }

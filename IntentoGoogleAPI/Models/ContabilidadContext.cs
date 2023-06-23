@@ -74,7 +74,7 @@ public partial class ContabilidadContext : DbContext
 
             entity.HasOne(d => d.DescripcionNavigation).WithMany(p => p.Movimientos)
                 .HasForeignKey(d => d.Descripcion)
-                .HasConstraintName("FK_Movimientos_TipoMovimiento");
+                .HasConstraintName("FK_Movimientos_Descripcion");
 
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.Movimientos)
                 .HasForeignKey(d => d.IdProducto)
@@ -91,17 +91,11 @@ public partial class ContabilidadContext : DbContext
 
         modelBuilder.Entity<Producto>(entity =>
         {
-            entity.HasKey(e => e.Cod).HasName("PK__Producto__C1FF6E912D244F56");
+            entity.HasKey(e => e.IdProducto).HasName("PK__Producto__C1FF6E912D244F56");
 
-            entity.Property(e => e.Cod)
-                .HasMaxLength(50)
-                .HasColumnName("COD");
+            entity.Property(e => e.IdProducto).HasMaxLength(50);
             entity.Property(e => e.Nombre).HasMaxLength(255);
             entity.Property(e => e.Precio).HasColumnType("decimal(10, 2)");
-
-            entity.HasOne(d => d.IdTiendaNavigation).WithMany(p => p.Productos)
-                .HasForeignKey(d => d.IdTienda)
-                .HasConstraintName("FK_Productos_Tienda");
         });
 
         modelBuilder.Entity<Tiendum>(entity =>
