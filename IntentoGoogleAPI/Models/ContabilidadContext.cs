@@ -94,6 +94,7 @@ public partial class ContabilidadContext : DbContext
             entity.HasKey(e => e.IdProducto).HasName("PK__Producto__C1FF6E912D244F56");
 
             entity.Property(e => e.IdProducto).HasMaxLength(50);
+            entity.Property(e => e.Categoria).HasMaxLength(50);
             entity.Property(e => e.Nombre).HasMaxLength(255);
             entity.Property(e => e.Precio).HasColumnType("decimal(10, 2)");
         });
@@ -125,6 +126,12 @@ public partial class ContabilidadContext : DbContext
             entity.HasKey(e => e.IntId);
 
             entity.Property(e => e.Correo).HasMaxLength(50);
+            entity.Property(e => e.EToken)
+                .HasMaxLength(75)
+                .HasColumnName("eToken");
+            entity.Property(e => e.ETokenValidUntil)
+                .HasColumnType("datetime")
+                .HasColumnName("eTokenValidUntil");
             entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Username).HasMaxLength(50);
 

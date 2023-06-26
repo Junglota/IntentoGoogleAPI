@@ -15,6 +15,10 @@ public partial class Usuario
 
     public int? UserType { get; set; }
 
+    public string? EToken { get; set; }
+
+    public DateTime? ETokenValidUntil { get; set; }
+
     public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
 
     public virtual ICollection<Tiendum> Tienda { get; set; } = new List<Tiendum>();
