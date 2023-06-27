@@ -40,6 +40,16 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Propietario", policy => policy.RequireClaim("UserType", "2"));
     options.AddPolicy("Empleado", policy => policy.RequireClaim("UserType", "3"));
 });
+//------------------------------------------------------CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://127.0.0.1:5500")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -55,5 +65,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors();
 
 app.Run();

@@ -25,10 +25,10 @@ namespace IntentoGoogleAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movimiento>>> GetMovimientos()
         {
-          if (_context.Movimientos == null)
-          {
-              return NotFound();
-          }
+            if (_context.Movimientos == null)
+            {
+                return NotFound();
+            }
             return await _context.Movimientos.ToListAsync();
         }
 
@@ -36,10 +36,10 @@ namespace IntentoGoogleAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Movimiento>> GetMovimiento(int id)
         {
-          if (_context.Movimientos == null)
-          {
-              return NotFound();
-          }
+            if (_context.Movimientos == null)
+            {
+                return NotFound();
+            }
             var movimiento = await _context.Movimientos.FindAsync(id);
 
             if (movimiento == null)
@@ -83,29 +83,62 @@ namespace IntentoGoogleAPI.Controllers
 
         // POST: api/Movimientos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Movimiento>> PostMovimiento(Movimiento movimiento)
+        [HttpPost("movimientoentrada")]
+        public async Task<ActionResult<Movimiento>> MovimientoEntrada(Movimiento movimiento)
         {
-          if (_context.Movimientos == null)
-          {
-              return Problem("Entity set 'ContabilidadContext.Movimientos'  is null.");
-          }
-            Movimiento body = new Movimiento()
+            if (_context.Movimientos == null)
             {
-                Fecha = movimiento.Fecha ?? DateTime.Now,
-                IdProducto = movimiento.IdProducto,
-                Cantidad = _context.Inventarios.Where(i => i.IdProducto == movimiento.IdProducto && i.IdTienda == movimiento.IdTienda).ToList().FirstOrDefault().Stock += movimiento.Cantidad,
-                TipoMovimiento = movimiento.TipoMovimiento,
-                Descripcion = movimiento.Descripcion,
-                Usuario = movimiento.Usuario,
-                IdTienda = movimiento.IdTienda
-            };
-            _context.Movimientos.Add(body);
-            await _context.SaveChangesAsync();
+                return Problem("Entity set 'ContabilidadContext.Movimientos'  is null.");
+            }
+            var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
+            if(inventario == null)
+            {
+                return Problem("El producto no existe");
+            }
+            _context.Movimientos.Add(movimiento);
+            inventario.Stock += movimiento.Cantidad;
+            _context.Entry(inventario).State = EntityState.Modified;
+            try
+            {
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return Problem("Hubo un problema agregando el registro");
+            }
+            
 
             return CreatedAtAction("GetMovimiento", new { id = movimiento.IntId }, movimiento);
         }
+        [HttpPost("movimientosalida")]
+        public async Task<ActionResult<Movimiento>> MovimientoSalida(Movimiento movimiento)
+        {
+            if (_context.Movimientos == null)
+            {
+                return Problem("Entity set 'ContabilidadContext.Movimientos'  is null.");
+            }
+            var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
+            if (inventario == null)
+            {
+                return Problem("El producto no existe");
+            }
+            _context.Movimientos.Add(movimiento);
+            inventario.Stock -= movimiento.Cantidad;
+            _context.Entry(inventario).State = EntityState.Modified;
+            try
+            {
 
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return Problem("Hubo un problema agregando el registro");
+            }
+
+
+            return CreatedAtAction("GetMovimiento", new { id = movimiento.IntId }, movimiento);
+        }
         // DELETE: api/Movimientos/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovimiento(int id)

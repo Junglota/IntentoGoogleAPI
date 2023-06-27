@@ -39,8 +39,8 @@ namespace IntentoGoogleAPI.Controllers
 
 
         // GET: api/Productos
-        [Authorize(policy: "Admin,Propietario,Empleado")]
-        [HttpGet("/tienda/{idTienda}")]
+        [Authorize(policy: "Admin")]
+        [HttpGet("tienda/{idTienda}")]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductosPropietario(int idTienda)
         {
           if (_context.Productos == null)
