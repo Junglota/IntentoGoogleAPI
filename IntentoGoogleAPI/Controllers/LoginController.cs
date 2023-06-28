@@ -45,6 +45,7 @@ namespace IntentoGoogleAPI.Controllers
                 Username = cuenta.Username,
                 Correo = cuenta.Correo,
                 UserType = cuenta.UserType,
+                IdTienda = cuenta.IdTienda,
                 JWTToken = jwtToken,
             });
         }

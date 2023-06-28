@@ -13,7 +13,6 @@ var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
 
 //-----------------------------------------------------Inyeccion de servicios
 builder.Services.AddScoped<LoginService>();
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,6 +38,20 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Admin", policy => policy.RequireClaim("UserType", "1"));
     options.AddPolicy("Propietario", policy => policy.RequireClaim("UserType", "2"));
     options.AddPolicy("Empleado", policy => policy.RequireClaim("UserType", "3"));
+    options.AddPolicy("AdminOrPropietario", policy =>
+    {
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("UserType", "1") || // Admin
+            context.User.HasClaim("UserType", "2")    // Propietario
+        );
+    });
+    options.AddPolicy("PropietarioOrEmpleado", policy =>
+    {
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("UserType", "2") || // Propietario
+            context.User.HasClaim("UserType", "3")    // Empleado
+        );
+    });
 });
 //------------------------------------------------------CORS
 builder.Services.AddCors(options =>

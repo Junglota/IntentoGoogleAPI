@@ -9,6 +9,7 @@
         public string? Correo { get; set; }
 
         public int? UserType { get; set; }
+        public int? IdTienda { get; set; }
         public string? JWTToken{ get; set; }
     }
 }

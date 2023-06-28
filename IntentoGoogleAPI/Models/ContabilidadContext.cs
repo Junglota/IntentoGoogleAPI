@@ -135,6 +135,10 @@ public partial class ContabilidadContext : DbContext
             entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Username).HasMaxLength(50);
 
+            entity.HasOne(d => d.IdTiendaNavigation).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.IdTienda)
+                .HasConstraintName("FK_Usuarios_Tienda");
+
             entity.HasOne(d => d.UserTypeNavigation).WithMany(p => p.Usuarios)
                 .HasForeignKey(d => d.UserType)
                 .HasConstraintName("FK_Usuarios_Tipo");

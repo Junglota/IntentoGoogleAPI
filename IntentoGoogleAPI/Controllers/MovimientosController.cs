@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IntentoGoogleAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IntentoGoogleAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MovimientosController : ControllerBase
@@ -22,7 +24,7 @@ namespace IntentoGoogleAPI.Controllers
         }
 
         // GET: api/Movimientos
-        [HttpGet]
+        [HttpGet,Authorize(policy: "Admin")]
         public async Task<ActionResult<IEnumerable<Movimiento>>> GetMovimientos()
         {
             if (_context.Movimientos == null)
@@ -31,9 +33,20 @@ namespace IntentoGoogleAPI.Controllers
             }
             return await _context.Movimientos.ToListAsync();
         }
+        [HttpGet("tienda/{idtienda}")]
+        public async Task<ActionResult<IEnumerable<Movimiento>>> GetMovimientos(int idtienda)
+        {
+            var movimientos = await _context.Movimientos.Where(m => m.IdTienda == idtienda).ToListAsync();
+            if (movimientos == null)
+            {
+                return NotFound();
+            }
+            return movimientos;
+        }
 
         // GET: api/Movimientos/5
-        [HttpGet("{id}")]
+
+        [HttpGet("{id}"),Authorize(policy:"Admin")]
         public async Task<ActionResult<Movimiento>> GetMovimiento(int id)
         {
             if (_context.Movimientos == null)
@@ -52,7 +65,7 @@ namespace IntentoGoogleAPI.Controllers
 
         // PUT: api/Movimientos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"),Authorize(policy: "AdminOrPropietario")]
         public async Task<IActionResult> PutMovimiento(int id, Movimiento movimiento)
         {
             if (id != movimiento.IntId)
@@ -140,7 +153,7 @@ namespace IntentoGoogleAPI.Controllers
             return CreatedAtAction("GetMovimiento", new { id = movimiento.IntId }, movimiento);
         }
         // DELETE: api/Movimientos/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"),Authorize(policy:"AdminOrPropietario")]
         public async Task<IActionResult> DeleteMovimiento(int id)
         {
             if (_context.Movimientos == null)
@@ -159,7 +172,7 @@ namespace IntentoGoogleAPI.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}"), Authorize(policy: "AdminOrPropietario")]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<Movimiento> personPatch) // Ejemplo de body: [{"op" : "replace", "path" : "/Cantidad", "value" : "10"}]
         {
             var result = _context.Movimientos.FirstOrDefault(n => n.IntId == id);

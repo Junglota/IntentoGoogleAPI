@@ -71,7 +71,7 @@ namespace IntentoGoogleAPI.Controllers
 
         // PUT: api/Productos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(policy: "AdminOrPropietario")]
         public async Task<IActionResult> PutProducto(string id, Producto producto)
         {
             if (id != producto.IdProducto)
@@ -131,8 +131,7 @@ namespace IntentoGoogleAPI.Controllers
         }
 
         // DELETE: api/Productos/5
-        [Authorize(policy: "Admin,Propietario")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(policy: "AdminOrPropietario")]
         public async Task<IActionResult> DeleteProducto(string id)
         {
             if (_context.Productos == null)
@@ -150,8 +149,7 @@ namespace IntentoGoogleAPI.Controllers
 
             return NoContent();
         }
-        [Authorize(policy: "Admin,Propietario")]
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}"), Authorize(policy: "AdminOrPropietario")]
         public async Task<IActionResult> Patch(string id, [FromBody] JsonPatchDocument<Producto> personPatch) // Ejemplo de body: [{"op" : "replace", "path" : "/Cantidad", "value" : "10"}]
         {
             var result = _context.Productos.FirstOrDefault(n => n.IdProducto == id);

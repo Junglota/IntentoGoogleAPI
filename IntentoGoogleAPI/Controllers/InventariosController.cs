@@ -36,9 +36,7 @@ namespace IntentoGoogleAPI.Controllers
 
 
         // GET: api/Inventarios
-        [Route("/tienda/{idTienda}")]
-        [Authorize(policy: "Admin")]
-        [HttpGet]
+        [HttpGet("tienda/{idTienda}")]
         public async Task<ActionResult<IEnumerable<Inventario>>> GetInventariosPropietario(int idTienda)
         {
             if (_context.Inventarios == null)
@@ -69,7 +67,7 @@ namespace IntentoGoogleAPI.Controllers
 
         // PUT: api/Inventarios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"),Authorize(policy:"AdminOrPropietario")]
         public async Task<IActionResult> PutInventario(int id, Inventario inventario)
         {
             if (id != inventario.IntId)
@@ -100,7 +98,8 @@ namespace IntentoGoogleAPI.Controllers
 
         // POST: api/Inventarios
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+
+        [HttpPost,Authorize(policy:"AdminOrPropietario")]
         public async Task<ActionResult<Inventario>> PostInventario(Inventario inventario)
         {
           if (_context.Inventarios == null)
@@ -114,7 +113,8 @@ namespace IntentoGoogleAPI.Controllers
         }
 
         // DELETE: api/Inventarios/5
-        [HttpDelete("{id}")]
+
+        [HttpDelete("{id}"),Authorize(policy:"Admin")]
         public async Task<IActionResult> DeleteInventario(int id)
         {
             if (_context.Inventarios == null)
