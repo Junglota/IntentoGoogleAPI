@@ -21,11 +21,11 @@ public partial class Movimiento
 
     public int? IdTienda { get; set; }
 
-    public virtual Descripcion? DescripcionNavigation { get; set; }
+    internal virtual Descripcion? DescripcionNavigation { get; set; }
 
-    public virtual Producto? IdProductoNavigation { get; set; }
+    internal virtual Producto? IdProductoNavigation { get; set; }
 
-    public virtual Tiendum? IdTiendaNavigation { get; set; }
+    internal virtual Tiendum? IdTiendaNavigation { get; set; }
 
-    public virtual Usuario? UsuarioNavigation { get; set; }
+    internal virtual Usuario? UsuarioNavigation { get; set; }
 }

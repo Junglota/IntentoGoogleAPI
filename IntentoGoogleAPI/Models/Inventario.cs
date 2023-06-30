@@ -15,5 +15,5 @@ public partial class Inventario
 
     public int? IdTienda { get; set; }
 
-    public virtual Producto IdProductoNavigation { get; set; } = null!;
+    internal virtual Producto IdProductoNavigation { get; set; } = null!;
 }

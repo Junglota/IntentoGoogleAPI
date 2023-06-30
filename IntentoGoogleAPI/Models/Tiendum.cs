@@ -13,9 +13,9 @@ public partial class Tiendum
 
     public int? IdPropietario { get; set; }
 
-    public virtual Usuario? IdPropietarioNavigation { get; set; }
+    internal virtual Usuario? IdPropietarioNavigation { get; set; }
 
-    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
+    internal virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
 
-    public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
+    internal virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

@@ -7,5 +7,5 @@ public partial class Descripcion
 {
     public string Descripcion1 { get; set; } = null!;
 
-    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
+    internal virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
 }

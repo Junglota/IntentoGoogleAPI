@@ -51,7 +51,7 @@ namespace IntentoGoogleAPI.Controllers
         }
         
         // GET: api/Productos/5
-        [Authorize(policy: "Admin")]
+        [Authorize(policy: "AdminOrPropietario")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(string id)
         {
@@ -102,7 +102,7 @@ namespace IntentoGoogleAPI.Controllers
 
         // POST: api/Productos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(policy: "Admin,Propietario")]
+        [Authorize(policy: "AdminOrPropietario")]
         [HttpPost]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {

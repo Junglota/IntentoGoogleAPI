@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace IntentoGoogleAPI.Models;
@@ -14,8 +15,8 @@ public partial class Producto
     public string? Categoria { get; set; }
 
     public int? IdTienda { get; set; }
-
-    public virtual ICollection<Inventario> Inventarios { get; set; } = new List<Inventario>();
-
-    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
+    [JsonIgnore]
+    internal virtual ICollection<Inventario> Inventarios { get; set; } = new List<Inventario>();
+    [System.Text.Json.Serialization.JsonIgnore]
+    internal virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
 }

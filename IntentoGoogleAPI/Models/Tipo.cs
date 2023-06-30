@@ -9,5 +9,5 @@ public partial class Tipo
 
     public string? Tipo1 { get; set; }
 
-    public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
+    internal virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

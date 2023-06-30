@@ -33,7 +33,7 @@ namespace IntentoGoogleAPI.Services
             string EmailDestino = usuario.Correo;
             string Password = "ettqymtesaldzmmi";//"Contabilidadsinrebu123123";
             string codigoVeridicacion = "1234";
-
+                                                                     //Aqui va EmailDestino
             MailMessage mailMessage = new MailMessage(EmailOrigen, "contabilidadsinrebu@gmail.com", "Cambio de contraseña", $"Su codigo de verificacion para cambiar la contraseña: <strong>{eToken}</strong>. El codigo va a ser valido por 30 minutos");
             mailMessage.IsBodyHtml = true;
 

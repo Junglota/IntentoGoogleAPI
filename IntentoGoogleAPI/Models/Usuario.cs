@@ -21,11 +21,11 @@ public partial class Usuario
 
     public DateTime? ETokenValidUntil { get; set; }
 
-    public virtual Tiendum? IdTiendaNavigation { get; set; }
+    internal virtual Tiendum? IdTiendaNavigation { get; set; }
 
-    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
+    internal virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
 
-    public virtual ICollection<Tiendum> Tienda { get; set; } = new List<Tiendum>();
+    internal virtual ICollection<Tiendum> Tienda { get; set; } = new List<Tiendum>();
 
-    public virtual Tipo? UserTypeNavigation { get; set; }
+    internal virtual Tipo? UserTypeNavigation { get; set; }
 }
