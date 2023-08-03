@@ -7,6 +7,10 @@ public partial class Usuario
 {
     public int IntId { get; set; }
 
+    public string? Nombre { get; set; }
+
+    public string? Apellido { get; set; }
+
     public string Username { get; set; } = null!;
 
     public string? Password { get; set; }
@@ -17,9 +21,9 @@ public partial class Usuario
 
     public int? IdTienda { get; set; }
 
-    public string? EToken { get; set; }
+    internal string? EToken { get; set; }
 
-    public DateTime? ETokenValidUntil { get; set; }
+    internal DateTime? ETokenValidUntil { get; set; }
 
     internal virtual Tiendum? IdTiendaNavigation { get; set; }
 

@@ -33,7 +33,7 @@ namespace IntentoGoogleAPI.Controllers
             }
             return await _context.Movimientos.ToListAsync();
         }
-        [HttpGet("tienda/{idtienda}")]
+        [HttpGet("tienda/{idtienda}"),Authorize(policy:"AdminOrPropietario")]
         public async Task<ActionResult<IEnumerable<Movimiento>>> GetMovimientos(int idtienda)
         {
             var movimientos = await _context.Movimientos.Where(m => m.IdTienda == idtienda).ToListAsync();

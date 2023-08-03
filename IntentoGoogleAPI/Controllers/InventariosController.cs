@@ -31,12 +31,27 @@ namespace IntentoGoogleAPI.Controllers
             {
                 return NotFound();
             }
-            return await _context.Inventarios.ToListAsync();
+
+            // esto antes devolvia inventarios completo
+
+            var inventarios = await (from i in _context.Inventarios
+                                     join p in _context.Productos on i.IdProducto equals p.IdProducto
+                                     join t in _context.Tienda on i.IdTienda equals t.IdLocalidad
+                                     select new Inventario
+                                     {
+                                         intID = i.IntId,
+                                         idProducto = p.IdProducto,
+                                         stockMinimo = i.StockMinimo,
+                                         nombreTienda = t.Localidad,
+                                         nombreProducto = p.Nombre,
+                                     }).ToListAsync();
+
+            return inventarios;
         }
 
 
         // GET: api/Inventarios
-        [HttpGet("tienda/{idTienda}")]
+        [HttpGet("tienda/{idTienda}"),Authorize(policy:"AdminOrPropietario")]
         public async Task<ActionResult<IEnumerable<Inventario>>> GetInventariosPropietario(int idTienda)
         {
             if (_context.Inventarios == null)

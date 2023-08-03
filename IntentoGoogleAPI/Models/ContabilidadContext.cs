@@ -31,7 +31,7 @@ public partial class ContabilidadContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=35.238.168.138;Database=Contabilidad;Uid=sqlserver;Password=contabilidadsinrebu;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=contabilidadsinrebu.database.windows.net;Database=Contabilidad;Uid=enmanuel;Password=Contabilidadsinrebu@;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -125,6 +125,7 @@ public partial class ContabilidadContext : DbContext
         {
             entity.HasKey(e => e.IntId);
 
+            entity.Property(e => e.Apellido).HasMaxLength(50);
             entity.Property(e => e.Correo).HasMaxLength(50);
             entity.Property(e => e.EToken)
                 .HasMaxLength(75)
@@ -132,6 +133,7 @@ public partial class ContabilidadContext : DbContext
             entity.Property(e => e.ETokenValidUntil)
                 .HasColumnType("datetime")
                 .HasColumnName("eTokenValidUntil");
+            entity.Property(e => e.Nombre).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Username).HasMaxLength(50);
 
