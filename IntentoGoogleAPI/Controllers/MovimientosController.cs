@@ -106,7 +106,15 @@ namespace IntentoGoogleAPI.Controllers
             var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
             if(inventario == null)
             {
-                return Problem("El producto no existe");
+                var stocks = new InventariosController(_context);
+                await stocks.PostInventario(new Inventario
+                {
+                    IdProducto = movimiento.IdProducto,
+                    StockMinimo = 0,
+                    Stock = 0,
+                    IdTienda = movimiento.IdTienda,
+                });
+                inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
             }
             _context.Movimientos.Add(movimiento);
             inventario.Stock += movimiento.Cantidad;
@@ -138,6 +146,10 @@ namespace IntentoGoogleAPI.Controllers
             }
             _context.Movimientos.Add(movimiento);
             inventario.Stock -= movimiento.Cantidad;
+            if(inventario.Stock < 0)
+            {
+                return Problem("El stock el producto no puede ser negativo");
+            }
             _context.Entry(inventario).State = EntityState.Modified;
             try
             {

@@ -69,7 +69,7 @@ namespace IntentoGoogleAPI.Controllers
                 try
                 {
                     await context.SaveChangesAsync();
-                    return Ok(new { message = "Revise su correo" });
+                    return Ok(new { message = "Revise su correo"});
                 }
                 catch(Exception ex)
                 {
@@ -103,6 +103,23 @@ namespace IntentoGoogleAPI.Controllers
                 return BadRequest(new { Message = "Error al guardar la contraseña" });
             }
 
+        }
+
+
+        [HttpPost("etokencheck")]
+        public async Task<IActionResult> eTokenCheck([FromBody]eTokenCheck eToken)
+        {
+            var encryptToken = GetSHA256(eToken.eToken);
+            var cuenta = await loginService.GetUsuarioByToken(encryptToken);
+            if (cuenta is null) 
+            {
+                return BadRequest(new { message = "Cuenta no encontrada" });
+            }
+            if(cuenta.ETokenValidUntil <= DateTime.Now)
+            {
+                return BadRequest("El codigo ya expiro");
+            }
+                return Ok();
         }
 
 

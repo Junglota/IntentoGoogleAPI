@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IntentoGoogleAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using IntentoGoogleAPI.Models.DTO;
 
 namespace IntentoGoogleAPI.Controllers
 {
@@ -25,7 +26,7 @@ namespace IntentoGoogleAPI.Controllers
         // GET: api/Inventarios
         [Authorize(policy: "Admin")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Inventario>>> GetInventariosAdmin()
+        public async Task<ActionResult<IEnumerable<adminStockRes>>> GetInventariosAdmin()
         {
             if (_context.Inventarios == null)
             {
@@ -37,10 +38,11 @@ namespace IntentoGoogleAPI.Controllers
             var inventarios = await (from i in _context.Inventarios
                                      join p in _context.Productos on i.IdProducto equals p.IdProducto
                                      join t in _context.Tienda on i.IdTienda equals t.IdLocalidad
-                                     select new Inventario
+                                     select new adminStockRes
                                      {
-                                         intID = i.IntId,
-                                         idProducto = p.IdProducto,
+                                         intId = i.IntId,
+                                         CodigoProducto = i.IdProducto,
+                                         Stock = i.Stock,
                                          stockMinimo = i.StockMinimo,
                                          nombreTienda = t.Localidad,
                                          nombreProducto = p.Nombre,
@@ -52,13 +54,26 @@ namespace IntentoGoogleAPI.Controllers
 
         // GET: api/Inventarios
         [HttpGet("tienda/{idTienda}"),Authorize(policy:"AdminOrPropietario")]
-        public async Task<ActionResult<IEnumerable<Inventario>>> GetInventariosPropietario(int idTienda)
+        public async Task<ActionResult<IEnumerable<adminStockRes>>> GetInventariosPropietario(int idTienda)
         {
             if (_context.Inventarios == null)
             {
                 return NotFound();
             }
-            return await _context.Inventarios.Where(p => p.IdTienda == idTienda).ToListAsync();
+            var inventarios = await (from i in _context.Inventarios
+                                     join p in _context.Productos on i.IdProducto equals p.IdProducto
+                                     join t in _context.Tienda on i.IdTienda equals idTienda
+                                     select new adminStockRes
+                                     {
+                                         intId = i.IntId,
+                                         CodigoProducto = i.IdProducto,
+                                         Stock = i.Stock,
+                                         stockMinimo = i.StockMinimo,
+                                         nombreTienda = t.Localidad,
+                                         nombreProducto = p.Nombre,
+                                     }).ToListAsync();
+
+            return inventarios;
         }
 
         // GET: api/Inventarios/5
