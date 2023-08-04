@@ -68,11 +68,23 @@ namespace IntentoGoogleAPI.Controllers
         [HttpPut("{id}"),Authorize(policy: "AdminOrPropietario")]
         public async Task<IActionResult> PutMovimiento(int id, Movimiento movimiento)
         {
-            if (id != movimiento.IntId)
+            var result = _context.Movimientos.AsNoTracking().FirstOrDefault(n => n.IntId == movimiento.IntId);
+            var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
+            if (result is null || inventario is null)
             {
                 return BadRequest();
             }
-
+            switch (movimiento.TipoMovimiento)
+            {
+                case "E":
+                    inventario.Stock -= result.Cantidad;
+                    inventario.Stock += movimiento.Cantidad;
+                    break;
+                case "S":
+                    inventario.Stock += result.Cantidad;
+                    inventario.Stock -= movimiento.Cantidad;
+                    break;
+            }
             _context.Entry(movimiento).State = EntityState.Modified;
 
             try
@@ -173,11 +185,21 @@ namespace IntentoGoogleAPI.Controllers
                 return NotFound();
             }
             var movimiento = await _context.Movimientos.FindAsync(id);
+            var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
             if (movimiento == null)
             {
                 return NotFound();
             }
 
+            switch (movimiento.TipoMovimiento)
+            {
+                case "E":
+                    inventario.Stock -= movimiento.Cantidad;
+                    break;
+                case "S":
+                    inventario.Stock += movimiento.Cantidad;
+                    break;
+            }
             _context.Movimientos.Remove(movimiento);
             await _context.SaveChangesAsync();
 
