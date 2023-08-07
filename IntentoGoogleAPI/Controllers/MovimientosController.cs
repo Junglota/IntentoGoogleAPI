@@ -9,6 +9,7 @@ using IntentoGoogleAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using IntentoGoogleAPI.Services;
 
 namespace IntentoGoogleAPI.Controllers
 {
@@ -18,10 +19,12 @@ namespace IntentoGoogleAPI.Controllers
     public class MovimientosController : ControllerBase
     {
         private readonly ContabilidadContext _context;
+        private readonly LoginService _loginService;
 
-        public MovimientosController(ContabilidadContext context)
+        public MovimientosController(ContabilidadContext context, LoginService loginService)
         {
             _context = context;
+            _loginService = loginService;
         }
 
         // GET: api/Movimientos
@@ -132,6 +135,23 @@ namespace IntentoGoogleAPI.Controllers
             _context.Movimientos.Add(movimiento);
             inventario.Stock += movimiento.Cantidad;
             _context.Entry(inventario).State = EntityState.Modified;
+
+            if(inventario.Stock < inventario.StockMinimo)
+            {
+                var correo = from i in _context.Tienda
+                             join u in _context.Usuarios on i.IdPropietario equals u.IntId
+                             where i.IntId == movimiento.IdTienda
+                             select u.Correo;
+                var nombreProducto = from p in _context.Productos
+                                     where p.IdProducto == movimiento.IdProducto
+                                     select p.Nombre;
+
+                _loginService.EnviarCorreoAlerta(correo.ToString(), nombreProducto.ToString());
+
+            }
+            
+
+
             try
             {
 

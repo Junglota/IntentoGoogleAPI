@@ -60,7 +60,7 @@ namespace IntentoGoogleAPI.Controllers
             {
                 return BadRequest();
             }
-
+            
             _context.Entry(usuario).State = EntityState.Modified;
 
             try
@@ -91,6 +91,7 @@ namespace IntentoGoogleAPI.Controllers
           {
               return Problem("Entity set 'ContabilidadContext.Usuarios'  is null.");
           }
+            usuario.Estado = 1; //Usuarios se crean activos siempre
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 

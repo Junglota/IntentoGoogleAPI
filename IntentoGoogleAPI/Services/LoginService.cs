@@ -59,5 +59,37 @@ namespace IntentoGoogleAPI.Services
 
 
         }
+        public bool EnviarCorreoAlerta(string? correo, string? productos)
+        {
+            string EmailOrigen = "contabilidadsinrebu@gmail.com";
+            string EmailDestino = correo;
+            string Password = "ettqymtesaldzmmi";//"Contabilidadsinrebu123123";
+            string codigoVeridicacion = "1234";
+            //Aqui va EmailDestino
+            MailMessage mailMessage = new MailMessage(EmailOrigen, "contabilidadsinrebu@gmail.com", "Alerta de stock bajo", $"Saludos, le informamos que su producto {productos}, se esta agotando.");
+            mailMessage.IsBodyHtml = true;
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+            smtpClient.EnableSsl = true;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Port = 587;
+            smtpClient.Credentials = new System.Net.NetworkCredential(EmailOrigen, Password);
+            try
+            {
+                smtpClient.Send(mailMessage);
+                smtpClient.Dispose();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                return false;
+            }
+
+
+
+
+        }
     } 
 }

@@ -17,6 +17,8 @@ public partial class ContabilidadContext : DbContext
 
     public virtual DbSet<Descripcion> Descripcions { get; set; }
 
+    public virtual DbSet<Estado> Estados { get; set; }
+
     public virtual DbSet<Inventario> Inventarios { get; set; }
 
     public virtual DbSet<Movimiento> Movimientos { get; set; }
@@ -31,7 +33,7 @@ public partial class ContabilidadContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=contabilidadsinrebu.database.windows.net;Database=Contabilidad;Uid=enmanuel;Password=Contabilidadsinrebu@;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=tcp:contabilidadsinrebu.database.windows.net,1433;Initial Catalog=Contabilidad;Persist Security Info=False;User ID=enmanuel;Password=Contabilidadsinrebu@;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +46,15 @@ public partial class ContabilidadContext : DbContext
             entity.Property(e => e.Descripcion1)
                 .HasMaxLength(50)
                 .HasColumnName("Descripcion");
+        });
+
+        modelBuilder.Entity<Estado>(entity =>
+        {
+            entity.HasKey(e => e.IntId);
+
+            entity.Property(e => e.Estado1)
+                .HasMaxLength(50)
+                .HasColumnName("Estado");
         });
 
         modelBuilder.Entity<Inventario>(entity =>
@@ -136,6 +147,10 @@ public partial class ContabilidadContext : DbContext
             entity.Property(e => e.Nombre).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Username).HasMaxLength(50);
+
+            entity.HasOne(d => d.EstadoNavigation).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.Estado)
+                .HasConstraintName("FK_Usuarios_Estados");
 
             entity.HasOne(d => d.IdTiendaNavigation).WithMany(p => p.Usuarios)
                 .HasForeignKey(d => d.IdTienda)
