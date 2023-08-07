@@ -112,7 +112,15 @@ namespace IntentoGoogleAPI.Controllers
             }
 
             _context.Tienda.Remove(tiendum);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+
+            }
+            
 
             return NoContent();
         }

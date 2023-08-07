@@ -122,6 +122,56 @@ namespace IntentoGoogleAPI.Controllers
                 return Ok();
         }
 
+        [HttpPost("Registro")]
+        public async Task<IActionResult> Registro([FromBody] Registro registro)
+        {
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (context.Usuarios == null)
+                    {
+                        return Problem("Entity set 'ContabilidadContext.Productos' is null.");
+                    }
+
+                    Usuario usuario = new Usuario()
+                    {
+                        Nombre = registro.Nombre,
+                        Apellido = registro.Apellido,
+                        Username = registro.Username,
+                        Password = registro.Password,
+                        Correo = registro.Correo,
+                        UserType = 2
+                    };
+
+                    context.Usuarios.Add(usuario);
+                    await context.SaveChangesAsync();
+
+                    Tiendum tienda = new Tiendum()
+                    {
+                        Localidad = registro.Localidad,
+                        IdPropietario = usuario.IntId
+                    };
+
+                    context.Tienda.Add(tienda);
+                    await context.SaveChangesAsync();
+
+                    usuario.IdTienda = tienda.IntId;
+                    context.Entry(usuario).State = EntityState.Modified;
+                    await context.SaveChangesAsync();
+
+                    transaction.Commit();
+
+                    return Created("registro", usuario);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return BadRequest(ex);
+                }
+            }
+        }
+
 
         [NonAction]
         public string GenerateToken(Usuario usuario)

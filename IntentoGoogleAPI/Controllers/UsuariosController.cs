@@ -112,7 +112,15 @@ namespace IntentoGoogleAPI.Controllers
             }
 
             _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return NoContent();
+            }
+            
 
             return NoContent();
         }

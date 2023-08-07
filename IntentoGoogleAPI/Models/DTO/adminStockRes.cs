@@ -8,5 +8,6 @@
         public int? Stock { get; set; }
         public int? stockMinimo { get; set; }
         public string? nombreTienda { get; set; }
+        public int idTienda { get; set; }
     }
 }

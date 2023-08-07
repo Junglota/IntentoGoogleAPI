@@ -110,6 +110,17 @@ namespace IntentoGoogleAPI.Controllers
           {
               return Problem("Entity set 'ContabilidadContext.Productos'  is null.");
           }
+          var movimiento =  _context.Movimientos.AsNoTracking().FirstOrDefaultAsync(m => m.IdProducto == producto.IdProducto && m.IdTienda == producto.IdTienda);
+          if(movimiento == null)
+            {
+                _context.Inventarios.Add(new Inventario
+                {
+                    IdProducto = producto.IdProducto,
+                    StockMinimo = 0,
+                    Stock = 0,
+                    IdTienda = producto.IdTienda,
+                });
+            }
             _context.Productos.Add(producto);
             try
             {

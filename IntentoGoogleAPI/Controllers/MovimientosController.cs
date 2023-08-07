@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IntentoGoogleAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace IntentoGoogleAPI.Controllers
 {
@@ -210,10 +211,30 @@ namespace IntentoGoogleAPI.Controllers
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<Movimiento> personPatch) // Ejemplo de body: [{"op" : "replace", "path" : "/Cantidad", "value" : "10"}]
         {
             var result = _context.Movimientos.FirstOrDefault(n => n.IntId == id);
+            
             if (result == null)
             {
                 return BadRequest();
 
+            }
+            var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == result.IdTienda && p.IdProducto == result.IdProducto);
+            if (inventario == null)
+            {
+                return BadRequest();
+                
+            }
+            var replaceOperation = personPatch.Operations.FirstOrDefault(op =>
+        op.OperationType == OperationType.Replace && op.path.Equals("/Cantidad"));
+            switch (result.TipoMovimiento)
+            {
+                case "E":
+                    inventario.Stock -= result.Cantidad;
+                    inventario.Stock += Convert.ToInt32(replaceOperation.value);
+                    break;
+                case "S":
+                    inventario.Stock += result.Cantidad;
+                    inventario.Stock -= Convert.ToInt32(replaceOperation.value);
+                    break;
             }
             personPatch.ApplyTo(result);
             _context.Entry(result).State = EntityState.Modified;

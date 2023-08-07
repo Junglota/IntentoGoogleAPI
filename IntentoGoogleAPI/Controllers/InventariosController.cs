@@ -37,7 +37,7 @@ namespace IntentoGoogleAPI.Controllers
 
             var inventarios = await (from i in _context.Inventarios
                                      join p in _context.Productos on i.IdProducto equals p.IdProducto
-                                     join t in _context.Tienda on i.IdTienda equals t.IdLocalidad
+                                     join t in _context.Tienda on i.IdTienda equals t.IntId
                                      select new adminStockRes
                                      {
                                          intId = i.IntId,
@@ -46,6 +46,7 @@ namespace IntentoGoogleAPI.Controllers
                                          stockMinimo = i.StockMinimo,
                                          nombreTienda = t.Localidad,
                                          nombreProducto = p.Nombre,
+                                         idTienda = t.IntId
                                      }).ToListAsync();
 
             return inventarios;
@@ -61,8 +62,9 @@ namespace IntentoGoogleAPI.Controllers
                 return NotFound();
             }
             var inventarios = await (from i in _context.Inventarios
+                                     where i.IdTienda == idTienda
                                      join p in _context.Productos on i.IdProducto equals p.IdProducto
-                                     join t in _context.Tienda on i.IdTienda equals idTienda
+                                     join t in _context.Tienda on i.IdTienda equals t.IntId
                                      select new adminStockRes
                                      {
                                          intId = i.IntId,
@@ -71,6 +73,7 @@ namespace IntentoGoogleAPI.Controllers
                                          stockMinimo = i.StockMinimo,
                                          nombreTienda = t.Localidad,
                                          nombreProducto = p.Nombre,
+                                         idTienda = t.IntId
                                      }).ToListAsync();
 
             return inventarios;
