@@ -112,7 +112,14 @@ namespace IntentoGoogleAPI.Controllers
                 return NotFound();
             }
 
-            _context.Usuarios.Remove(usuario);
+            if (usuario.Estado == 1)
+            {
+                usuario.Estado = 2;
+            }
+            else if(usuario.Estado == 2)
+            {
+                usuario.Estado = 1;
+            }
             try
             {
                 await _context.SaveChangesAsync();
