@@ -2,6 +2,7 @@
 using IntentoGoogleAPI.Models;
 using IntentoGoogleAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -16,6 +17,12 @@ var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddNewtonsoftJson();
+Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            webBuilder.UseUrls($"http://*:{port}/");
+        });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -104,4 +111,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseCors();
 
-app.Run(url);
+app.Run();
