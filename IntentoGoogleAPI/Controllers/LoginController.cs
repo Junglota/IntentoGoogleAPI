@@ -172,6 +172,49 @@ namespace IntentoGoogleAPI.Controllers
             }
         }
 
+        [HttpPost("updatemail")]
+        public async Task<IActionResult> updateMail([FromBody] updateMail updateMail)
+        {
+            var cuenta = await context.Usuarios.FirstOrDefaultAsync(u=> u.Correo == updateMail.correo && u.Password == updateMail.password);
+            if (cuenta is null)
+            {
+                return BadRequest(new { message = "Cuenta no encontrada" });
+            }
+            cuenta.Correo = updateMail.newCorreo;
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("updatepassword")]
+        public async Task<IActionResult> updatePassword([FromBody] updatePassword updatePassword)
+        {
+            var cuenta = await context.Usuarios.FirstOrDefaultAsync(u => u.Correo == updatePassword.correo && u.Password == updatePassword.password);
+            if (cuenta is null)
+            {
+                return BadRequest(new { message = "Cuenta no encontrada" });
+            }
+            cuenta.Password = updatePassword.newPassword;
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
 
         [NonAction]
         public string GenerateToken(Usuario usuario)
