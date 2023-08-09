@@ -136,22 +136,6 @@ namespace IntentoGoogleAPI.Controllers
             inventario.Stock += movimiento.Cantidad;
             _context.Entry(inventario).State = EntityState.Modified;
 
-            if(inventario.Stock < inventario.StockMinimo)
-            {
-                var correo = from i in _context.Tienda
-                             join u in _context.Usuarios on i.IdPropietario equals u.IntId
-                             where i.IntId == movimiento.IdTienda
-                             select u.Correo;
-                var nombreProducto = from p in _context.Productos
-                                     where p.IdProducto == movimiento.IdProducto
-                                     select p.Nombre;
-
-                _loginService.EnviarCorreoAlerta(correo.ToString(), nombreProducto.ToString());
-
-            }
-            
-
-
             try
             {
 
@@ -168,34 +152,59 @@ namespace IntentoGoogleAPI.Controllers
         [HttpPost("movimientosalida")]
         public async Task<ActionResult<Movimiento>> MovimientoSalida(Movimiento movimiento)
         {
-            if (_context.Movimientos == null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                return Problem("Entity set 'ContabilidadContext.Movimientos'  is null.");
-            }
-            var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
-            if (inventario == null)
-            {
-                return Problem("El producto no existe");
-            }
-            _context.Movimientos.Add(movimiento);
-            inventario.Stock -= movimiento.Cantidad;
-            if(inventario.Stock < 0)
-            {
-                return Problem("El stock el producto no puede ser negativo");
-            }
-            _context.Entry(inventario).State = EntityState.Modified;
-            try
-            {
+                try
+                {
+                    if (_context.Movimientos == null)
+                    {
+                        return Problem("Entity set 'ContabilidadContext.Movimientos'  is null.");
+                    }
+                    var inventario = await _context.Inventarios.FirstOrDefaultAsync(p => p.IdTienda == movimiento.IdTienda && p.IdProducto == movimiento.IdProducto);
+                    if (inventario == null)
+                    {
+                        return Problem("El producto no existe");
+                    }
+                    _context.Movimientos.Add(movimiento);
+                    inventario.Stock -= movimiento.Cantidad;
+                    if (inventario.Stock < 0)
+                    {
+                        return Problem("El stock el producto no puede ser negativo");
+                    }
+                    _context.Entry(inventario).State = EntityState.Modified;
+                    try
+                    {
 
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return Problem("Hubo un problema agregando el registro");
-            }
+                        await _context.SaveChangesAsync();
+                    }
+                    catch
+                    {
+                        return Problem("Hubo un problema agregando el registro");
+                    }
+                    if (inventario.Stock < inventario.StockMinimo)
+                    {
+                        var correo = from i in _context.Tienda
+                                     join u in _context.Usuarios on i.IdPropietario equals u.IntId
+                                     where i.IntId == movimiento.IdTienda
+                                     select u.Correo;
+                        var nombreProducto = await (from p in _context.Productos
+                                                    where p.IdProducto == movimiento.IdProducto
+                                                    select p.Nombre).FirstOrDefaultAsync();
+
+                        _loginService.EnviarCorreoAlerta(correo.ToString(), nombreProducto);
+
+                    }
 
 
-            return CreatedAtAction("GetMovimiento", new { id = movimiento.IntId }, movimiento);
+                    return CreatedAtAction("GetMovimiento", new { id = movimiento.IntId }, movimiento);
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    return BadRequest(ex);
+                }
+            }
+           
         }
         // DELETE: api/Movimientos/5
         [HttpDelete("{id}"),Authorize(policy:"AdminOrPropietario")]

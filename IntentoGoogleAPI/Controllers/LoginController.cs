@@ -37,16 +37,23 @@ namespace IntentoGoogleAPI.Controllers
             {
                 return BadRequest(new { message = "No hay coincidencias." });
             }
+            if(cuenta.Estado == 2)
+            {
+                return BadRequest(new { message = "Cuenta inactiva" });
+            }
             string jwtToken = GenerateToken(cuenta);
             //token
             return Ok(new LoginResponse()
             {
                 IntId = cuenta.IntId,
+                Nombre = cuenta.Nombre,
+                Apellido = cuenta.Apellido,
                 Username = cuenta.Username,
                 Correo = cuenta.Correo,
                 UserType = cuenta.UserType,
                 IdTienda = cuenta.IdTienda,
                 JWTToken = jwtToken,
+                Estado = cuenta.Estado,
             });
         }
         [HttpPost("forgotpassword")]
